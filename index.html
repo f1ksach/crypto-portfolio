@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: http: data: 'unsafe-inline';">
+  <title>Crypto AI Analytics Platform</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="theme-blue">
+
+  <!-- Верхня панель та навігація -->
+  <header class="navbar">
+    <div class="logo">⚡ CRYPTO<span>AI</span></div>
+
+    <nav class="nav-tabs">
+      <button class="nav-tab-btn active" data-page="page-dashboard">Dashboard</button>
+      <button class="nav-tab-btn" data-page="page-scanner">AI Scanner 🔍</button>
+      <button class="nav-tab-btn" data-page="page-whales">Smart Money 🐋</button>
+      <button class="nav-tab-btn" data-page="page-news">AI News 📰</button>
+      <button class="nav-tab-btn" data-page="page-portfolio">Portfolio 💼</button>
+      <button class="nav-tab-btn" data-page="page-tools">DeFi & Tools 🛠️</button>
+      <button class="nav-tab-btn" data-page="page-profile">Личный кабинет 👤</button>
+    </nav>
+
+    <div class="header-controls">
+      <button id="langToggleBtn" class="btn-lang">🌐 EN</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- СТОРІНКА 1: DASHBOARD -->
+    <section id="page-dashboard" class="page-section active">
+      <div class="dashboard-container">
+        <div class="left-panel">
+          <div class="crypto-cards" id="cryptoCards">
+            <div class="loading">Загрузка рыночных данных...</div>
+          </div>
+
+          <div class="quick-widgets-row">
+            <div class="mini-widget">
+              <span class="widget-title">⛽ Gas Tracker</span>
+              <div class="gas-stats">
+                <span>ETH: <strong id="ethGas">-- Gwei</strong></span>
+                <span>SOL: <strong id="solGas">-- Lamports</strong></span>
+                <span>TON: <strong id="tonGas">-- TON</strong></span>
+              </div>
+            </div>
+            <div class="mini-widget">
+              <span class="widget-title">😱 Fear & Greed Index</span>
+              <div class="fng-box">
+                <h3 id="fngValue">--</h3>
+                <span id="fngText">Загрузка...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-box">
+            <div class="box-header">
+              <div class="coin-selector-box">
+                <label id="labelCoin" for="coinSelect">Монета:</label>
+                <select id="coinSelect">
+                  <option value="bitcoin">Bitcoin (BTC)</option>
+                  <option value="ethereum">Ethereum (ETH)</option>
+                  <option value="solana">Solana (SOL)</option>
+                  <option value="the-open-network">Toncoin (TON)</option>
+                  <option value="ripple">XRP (Ripple)</option>
+                  <option value="cardano">Cardano (ADA)</option>
+                  <option value="dogecoin">Dogecoin (DOGE)</option>
+                </select>
+              </div>
+              <h3 id="chartTitle">📈 BTC/USDT</h3>
+            </div>
+            <div class="tradingview-widget-container" style="height: 340px;">
+              <div id="tradingview_chart" style="height: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-panel">
+          <div class="ai-signal-box">
+            <div class="box-header">
+              <h3>🎯 AI Signal Analyzer</h3>
+              <button id="runSignalBtn" class="btn-small">Анализировать ⚡</button>
+            </div>
+
+            <div id="signalBadgeContainer" class="signal-badge-box neutral-signal">
+              <span id="signalTypeText">ОЖИДАНИЕ АНАЛИЗА</span>
+              <strong id="signalProbText">-- %</strong>
+            </div>
+
+            <div class="scenarios">
+              <div class="scenario bullish">
+                <span id="txtBull">Bullish</span>
+                <strong id="bullPercent">--%</strong>
+              </div>
+              <div class="scenario neutral">
+                <span id="txtNeut">Neutral</span>
+                <strong id="neutPercent">--%</strong>
+              </div>
+              <div class="scenario bearish">
+                <span id="txtBear">Bearish</span>
+                <strong id="bearPercent">--%</strong>
+              </div>
+            </div>
+
+            <div class="trade-levels" id="tradeLevelsBox">
+              <div class="level-row">
+                <span id="lblEntry">Точка входа:</span>
+                <strong id="valEntry">$ --</strong>
+              </div>
+              <div class="level-row">
+                <span id="lblTp">Цель (TP):</span>
+                <strong id="valTp" class="tp-color">$ --</strong>
+              </div>
+              <div class="level-row">
+                <span id="lblSl">Стоп-лосс (SL):</span>
+                <strong id="valSl" class="sl-color">$ --</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert-box-widget">
+            <div class="box-header" style="margin-bottom: 8px; border:none; padding:0;">
+              <h3>🔔 AI Price & Signal Alert</h3>
+            </div>
+            <p style="font-size:12px; color:#94a3b8; margin-bottom:10px;">Уведомить, если цена монеты пересечет уровень:
+            </p>
+            <div class="alert-row">
+              <input type="number" id="alertPriceInput" placeholder="Цена в USD...">
+              <button id="setAlertBtn" class="btn-small">Создать алерт</button>
+            </div>
+            <div id="activeAlertsList" style="margin-top: 8px; font-size: 12px; color: #cbd5e1;">Нет активных алертов
+            </div>
+          </div>
+
+          <div class="ai-chat-box">
+            <div class="box-header">
+              <h3 id="chatHeaderTitle">💬 AI Crypto Copilot</h3>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+              <div class="msg ai">Привет! Я твой AI Copilot. Спрашивай меня о рынке, ставках и аналитике.</div>
+            </div>
+            <div class="chat-input-area">
+              <input type="text" id="userQuestion" placeholder="Спросить у AI...">
+              <button id="sendBtn" class="btn-send">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- СТОРІНКА 2: AI SCANNER -->
+    <section id="page-scanner" class="page-section">
+      <div class="inner-page-container">
+        <div class="box-header" style="border: none; margin-bottom: 10px;">
+          <h2>🔍 AI Real-Time Market Scanner</h2>
+          <button id="refreshScannerBtn" class="btn-small">Сканировать рынок ⚡</button>
+        </div>
+        <p class="section-desc">Искусственный интеллект непрерывно ищет всплески объемов, пробои уровней и аномалии.</p>
+        <div class="scanner-grid" id="scannerContainer"></div>
+      </div>
+    </section>
+
+    <!-- СТОРІНКА 3: SMART MONEY -->
+    <section id="page-whales" class="page-section">
+      <div class="inner-page-container">
+        <div class="box-header" style="border: none; margin-bottom: 10px;">
+          <h2>🐋 Smart Money & Whale Live Feed</h2>
+          <button id="refreshWhalesBtn" class="btn-small">Обновить транзакции 🔄</button>
+        </div>
+        <p class="section-desc">Мгновенное отслеживание крупных кошельков и институциональных переводов в блокчейне.</p>
+        <div class="whale-list" id="whalesContainer"></div>
+      </div>
+    </section>
+
+    <!-- СТОРІНКА 4: AI NEWS -->
+    <section id="page-news" class="page-section">
+      <div class="inner-page-container">
+        <div class="box-header" style="border: none; margin-bottom: 10px;">
+          <h2>📰 AI Real-Time News Stream</h2>
+          <button id="refreshNewsBtn" class="btn-small">Обновить ленту 🔄</button>
+        </div>
+        <p class="section-desc">Свежие новости крипторынка с мгновенным разбором от искусственного интеллекта в реальном
+          времени.</p>
+        <div class="news-list" id="aiNewsContainer"></div>
+      </div>
+    </section>
+
+    <!-- СТОРІНКА 5: PORTFOLIO & WEB3 -->
+    <section id="page-portfolio" class="page-section">
+      <div class="inner-page-container">
+        <h2>💼 Personal AI Portfolio & Web3 Intelligence</h2>
+        <p class="section-desc">Подключите некастодиальные кошельки через Web3 или добавьте вручную для глубокого
+          AI-аудита.</p>
+
+        <div class="web3-connect-box">
+          <h3>⚡ Web3 Быстрое подключение</h3>
+          <div class="web3-buttons">
+            <button id="connectMetamask" class="btn-web3 metamask">🦊 Connect MetaMask</button>
+            <button id="connectTonConnect" class="btn-web3 ton">💎 Connect TonConnect</button>
+          </div>
+        </div>
+
+        <div class="add-wallet-box">
+          <h3>➕ Добавить кошелек вручную</h3>
+          <div class="wallet-form-row">
+            <select id="walletTypeSelect">
+              <option value="Tonkeeper">Tonkeeper 💎</option>
+              <option value="Binance">Binance 🟡</option>
+              <option value="Trust Wallet">Trust Wallet 🛡️</option>
+              <option value="MetaMask">MetaMask 🦊</option>
+              <option value="Phantom">Phantom 👻</option>
+            </select>
+            <input type="text" id="walletAddressInput" placeholder="Введите адрес (например, UQ... или 0x...)...">
+            <button id="addWalletBtn" class="btn-add-wallet">Добавить</button>
+          </div>
+        </div>
+
+        <div id="portfolioAnalyticsSection" class="portfolio-analytics-hidden">
+          <div class="portfolio-summary-grid">
+            <div class="portfolio-stat-card">
+              <span>Общий баланс портфеля</span>
+              <h2 id="portfolioTotalUsd">$0.01</h2>
+            </div>
+            <div class="portfolio-stat-card">
+              <span>AI Risk Score</span>
+              <h2 id="portfolioRiskScore" style="color: var(--accent);">12 / 100</h2>
+            </div>
+            <div class="portfolio-stat-card">
+              <span>Статус диверсификации</span>
+              <h2 id="portfolioDiversification" style="color: #4ade80;">Safe</h2>
+            </div>
+          </div>
+
+          <div class="ai-audit-trigger-box">
+            <button id="runAiAuditBtn" class="btn-ai-audit">🤖 Запустить полный AI-аудит активов</button>
+          </div>
+
+          <div id="aiAuditResultBox" class="ai-audit-result-box" style="display: none;">
+            <h4>🧠 AI Portfolio Intelligence Report</h4>
+            <p id="aiAuditText">Анализирую активы...</p>
+          </div>
+        </div>
+
+        <div class="wallets-container" style="margin-top: 25px;">
+          <h3 style="margin-bottom: 15px; font-size: 16px;">Мои подключенные кошельки</h3>
+          <div id="walletsList" class="wallets-list">
+            <p class="empty-wallets">Еще нет добавленных кошельков.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- СТОРІНКА 6: DEFI & TOOLS -->
+    <section id="page-tools" class="page-section">
+      <div class="inner-page-container">
+        <h2>🛠️ DeFi Derivatives & Market Intelligence</h2>
+        <p class="section-desc">Мониторинг ставок финансирования (Funding Rates) на топовых биржах и карта ликвидаций.
+        </p>
+
+        <div class="box-header" style="margin-top: 15px;">
+          <h3>📊 Futures Funding Rates (Ставки финансирования)</h3>
+          <span style="font-size: 12px; color: #94a3b8;">Обновление каждые 60с</span>
+        </div>
+
+        <div class="table-container">
+          <table class="funding-table">
+            <thead>
+              <tr>
+                <th>Asset</th>
+                <th>Binance Funding</th>
+                <th>Bybit Funding</th>
+                <th>OKX Funding</th>
+                <th>Sentiment</th>
+              </tr>
+            </thead>
+            <tbody id="fundingTableBody"></tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 30px;" class="box-header">
+          <h3>⚡ 24h Liquidations Heatmap (Ликвидации)</h3>
+        </div>
+        <div class="liquidation-card-grid">
+          <div class="liq-card long-liq">
+            <span>Longs Liquidated (24h)</span>
+            <h2 id="longLiqVal">$ 142.8M</h2>
+          </div>
+          <div class="liq-card short-liq">
+            <span>Shorts Liquidated (24h)</span>
+            <h2 id="shortLiqVal">$ 88.4M</h2>
+          </div>
+          <div class="liq-card total-liq">
+            <span>Total Liquidated</span>
+            <h2 id="totalLiqVal">$ 231.2M</h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- СТОРІНКА 7: ЛИЧНЫЙ КАБИНЕТ 👤 -->
+    <section id="page-profile" class="page-section">
+      <div class="inner-page-container">
+        <h2>👤 Личный кабинет трейдера</h2>
+        <p class="section-desc">Центр управления аккаунтом, привязанными кошельками, темами и безопасностью.</p>
+
+        <!-- Три горизонтальных полоски с темами, статусом и API -->
+        <div class="profile-top-bars">
+          <!-- Полоска 1: Перенос тем -->
+          <div class="profile-bar-card">
+            <span class="bar-label">🎨 Тема оформления</span>
+            <div class="theme-buttons-row">
+              <div class="theme-buttons">
+                <button onclick="setTheme('theme-gold')"
+                  style="background: linear-gradient(135deg, #f59e0b, #b45309); color: #000; font-weight: bold;">Чёрная
+                  тема</button>
+                <button onclick="setTheme('theme-purple')"
+                  style="background: linear-gradient(135deg, #a855f7, #6b21a8); color: #fff; font-weight: bold; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);">Фиолетовая
+                  тема</button>
+                <button onclick="setTheme('theme-blue')"
+                  style="background: #0284c7; color: #fff; font-weight: bold;">Синяя тема</button>
+              </div>
+            </div>
+            <!-- Полоска 2: Статус подписки (от себя) -->
+            <div class="profile-bar-card">
+              <span class="bar-label">⭐ Уровень аккаунта</span>
+              <div class="bar-content-flex">
+                <strong>PRO Terminal Access</strong>
+                <span class="badge-active">Активен (Безлимит)</span>
+              </div>
+            </div>
+            <!-- Полоска 3: Безопасность и API (от себя) -->
+            <div class="profile-bar-card">
+              <span class="bar-label">🔒 Безопасность & API</span>
+              <div class="bar-content-flex">
+                <span>Google 2FA: <strong style="color: #4ade80;">Защищено</strong></span>
+                <button class="btn-small" onclick="alert('Ваш секретный API-ключ: ctk_live_98234jdf71a')">Показать API
+                  ключ</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Секция привязанных криптокошельков -->
+          <div style="margin-top: 30px;">
+            <h3 style="margin-bottom: 8px; font-size: 18px;">🔗 Привязанные криптокошельки</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Здесь отображаются все активные
+              кошельки, привязанные к вашей торговой сессии.</p>
+
+            <div class="add-wallet-box" style="margin-bottom: 15px;">
+              <div class="wallet-form-row">
+                <select id="profileWalletType">
+                  <option value="Tonkeeper">Tonkeeper 💎</option>
+                  <option value="MetaMask">MetaMask 🦊</option>
+                  <option value="Binance">Binance 🟡</option>
+                  <option value="Phantom">Phantom 👻</option>
+                </select>
+                <input type="text" id="profileWalletInput" placeholder="Введите адрес кошелька...">
+                <button id="profileAddWalletBtn" class="btn-add-wallet">Привязать</button>
+              </div>
+            </div>
+
+            <div id="profileWalletsList" class="wallets-list">
+              <p class="empty-wallets">Нет привязанных кошельков. Подключите кошелек выше или через вкладку Portfolio.
+              </p>
+            </div>
+          </div>
+
+          <!-- Блок от себя: Реферальная программа -->
+          <div style="margin-top: 30px;">
+            <h3 style="margin-bottom: 12px; font-size: 18px;">🎁 Реферальная программа & Бонусы</h3>
+            <div class="referral-card">
+              <div>
+                <span style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Ваша
+                  персональная реферальная ссылка:</span>
+                <code style="color: var(--accent); font-size: 13px;">https://crypto-ai.io/ref?trader_id=777_pro</code>
+              </div>
+              <button class="btn-small" onclick="alert('Реферальная ссылка успешно скопирована!')">Скопировать
+                ссылку</button>
+            </div>
+          </div>
+        </div>
+    </section>
+
+  </main>
+
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script src="script.js"></script>
+ 
